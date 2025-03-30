@@ -202,7 +202,7 @@ function App() {
     toaster.create({ title: 'Game started!', description: `Good luck, ${playerName}!`, type: 'info', duration: 2000 });
   };
   const resetGame = () => { setGameStatus('idle'); };
-  const handleDigitsChange = (valueAsString: string, valueAsNumber: number) => { /* ... as before ... */
+  const handleDigitsChange = (_valueAsString: string, valueAsNumber: number) => { /* ... as before ... */
     const newDigits = isNaN(valueAsNumber) ? 1 : Math.max(1, valueAsNumber);
     setSettings(prev => ({ ...prev, digits: newDigits }));
    };
