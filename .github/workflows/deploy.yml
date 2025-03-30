@@ -13,27 +13,36 @@ permissions:
   id-token: write
 
 jobs:
-  build:
+  build: # Build the React application
     runs-on: ubuntu-latest
     steps:
       - name: Checkout your repository using git
         uses: actions/checkout@v4
-      - name: Install, build, and upload your site
-        uses: withastro/action-bun@v1 # Uses Bun!
-        with:
-          node-version: "20" # Specify Node version if needed by Bun or deps
-          bun-version: "latest" # Or specify a Bun version
-      # Install dependencies
-      - run: bun install
-      # Build the site (ensuring correct base path is in vite.config)
-      - run: bun run build
-      # Upload artifact for GitHub Pages
+
+      # --- Use the official Bun setup action ---
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        # Optionally specify a bun version, defaults to latest
+        # with:
+        #   bun-version: latest
+
+      # --- Install dependencies using Bun ---
+      - name: Install Dependencies
+        run: bun install
+
+      # --- Build the site using Bun ---
+      # This command should match your package.json build script
+      - name: Build Site
+        run: bun run build
+
+      # --- Upload artifact for GitHub Pages ---
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dist # Path to the build output
+          # Path to the build output directory specified in vite.config.js (usually 'dist')
+          path: ./dist
 
-  deploy:
+  deploy: # Deploy the artifact to GitHub Pages
     needs: build
     runs-on: ubuntu-latest
     environment:
