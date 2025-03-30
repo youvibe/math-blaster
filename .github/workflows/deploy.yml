@@ -1,0 +1,45 @@
+# .github/workflows/deploy.yml
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main] # Trigger on pushes to the main branch
+  workflow_dispatch: # Allow manual trigger
+
+# Allow this job to clone the repo and create a page deployment
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout your repository using git
+        uses: actions/checkout@v4
+      - name: Install, build, and upload your site
+        uses: withastro/action-bun@v1 # Uses Bun!
+        with:
+          node-version: "20" # Specify Node version if needed by Bun or deps
+          bun-version: "latest" # Or specify a Bun version
+      # Install dependencies
+      - run: bun install
+      # Build the site (ensuring correct base path is in vite.config)
+      - run: bun run build
+      # Upload artifact for GitHub Pages
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist # Path to the build output
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
